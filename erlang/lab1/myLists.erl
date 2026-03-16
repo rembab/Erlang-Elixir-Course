@@ -28,4 +28,3 @@ sumFloats(L) ->
     [X|A] ->
       sumFloats(A)
   end.
-
