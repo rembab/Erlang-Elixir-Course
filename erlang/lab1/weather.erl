@@ -1,5 +1,5 @@
 -module(weather).
--export([random_dataset/1, number_of_readings/2, calculate_min_and_max/2, extract_readings/2, calculate_mean/2]).
+-export([random_dataset/1, number_of_readings/2, calculate_min_and_max/2, calculate_mean/2]).
 
 random_char( ) -> 
   rand:uniform(26) + 64.
@@ -44,10 +44,6 @@ random_dataset(NStations) ->
       [random_station_data(rand:uniform(3))] ++ random_dataset(NStations-1)
   end.
 
-
-number_of_readings(Readings, Date) -> 
-  length([X || X <- Readings, element(2,X) == Date]).                                 
-
 extract_readings(Readings, Type) ->
   case Readings of
     [] ->
@@ -58,7 +54,8 @@ extract_readings(Readings, Type) ->
       []
   end.
 
-
+number_of_readings(Readings, Date) -> 
+  length([X || X <- Readings, element(2,X) == Date]).                                 
 
 calculate_min_and_max(Readings,Type) -> 
   R = extract_readings(Readings, Type),
