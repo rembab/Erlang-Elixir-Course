@@ -116,14 +116,18 @@ get_station_mean(NameOrCoords, Type, Monitor) ->
     
 get_daily_mean(Type, Day, Monitor) ->
   Stations = maps:values(Monitor),
-  Readings = lists:foldl(fun (R, Acc) -> [R#station.readings] ++ Acc end, [], Stations),
+  Readings = lists:flatmap(fun(S) -> S#station.readings end, Stations),
   ReadingsInDay = lists:filter(fun 
-                                 (R) when R#reading.type == Type, element(1, R#reading.dateTime) == Day
-                                          -> true; 
-                                 (_) 
-                                 -> false end, Readings),
-  io:format("~p", length(ReadingsInDay)),
-  lists:foldl(fun (X, Acc) -> X#reading.value + Acc end, 0, ReadingsInDay) / length(ReadingsInDay).
+                                 (R) when R#reading.type == Type, element(1, R#reading.dateTime) == Day -> true; 
+                                 (_) -> false 
+                               end, 
+                               Readings),
+  case ReadingsInDay of
+    [] ->
+      {error, "There are no readings of afermentioned type recorded that day"};
+    [Head | Tail] ->
+      lists:foldl(fun (X, Acc) -> X#reading.value + Acc end, Head#reading.value, Tail) / length(ReadingsInDay)
+  end.
 
 
 
