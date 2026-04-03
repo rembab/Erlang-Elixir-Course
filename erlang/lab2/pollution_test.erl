@@ -145,6 +145,19 @@ get_one_value_fail_test() ->
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_station_min_test() ->
+  M = pollution:add_station("Stacja 1", {1,1}, pollution:create_monitor()),
+  M1 = pollution:add_value("Stacja 1", {{2023,3,27},{11,16,10}}, "PM10", 10, M),
+  M2 = pollution:add_value("Stacja 1", {{2023,3,27},{11,16,11}}, "PM10", 5, M1),
+  M3 = pollution:add_value("Stacja 1", {{2023,3,27},{11,16,12}}, "PM10", 10, M2),
+  M4 = pollution:add_value("Stacja 1", {{2023,3,27},{11,16,13}}, "PM10", 1, M3),
+
+  ?assertMatch(10, pollution:get_station_min("Stacja 1", "PM10", M1)),
+  ?assertMatch(5, pollution:get_station_min("Stacja 1", "PM10", M2)),
+  ?assertMatch(5, pollution:get_station_min({1,1}, "PM10", M3)),
+  ?assertMatch(1, pollution:get_station_min("Stacja 1", "PM10", M4)).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 get_station_mean_test() ->
   M = pollution:add_station("Stacja 1", {1,1}, pollution:create_monitor()),
   M1 = pollution:add_value("Stacja 1", {{2023,3,27},{11,16,10}}, "PM10", 10, M),

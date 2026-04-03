@@ -90,7 +90,7 @@ get_station_min(NameOrCoords, Type, Monitor) ->
       {error, "No station with such name or coordinates"};
     true ->
       #{NameOrCoords := Station} = Monitor, 
-      Xs = [X || X <- Station#station.readings, X#reading.type =:= Type],
+      Xs = [X#reading.value || X <- Station#station.readings, X#reading.type =:= Type],
       case Xs of
         [] ->
           {error, "Station has no readings of aformentioned type"};
