@@ -1,5 +1,5 @@
 -module(pollution).
--export([create_monitor/0, add_station/3, add_value/5, remove_value/4, get_one_value/4, get_station_min/3, get_station_mean/3, get_daily_mean/3]).
+-export([create_monitor/0, add_station/3, add_value/5, remove_value/4, get_one_value/4, get_station_min/3, get_station_mean/3, get_daily_mean/3, get_correlation/3]).
 
 -record(reading, {dateTime, type, value}).
 -record(station, {name, coords, readings=[]}).
@@ -65,7 +65,6 @@ remove_value(NameOrCoords, DateTime, Type, Monitor) ->
           NewStation = Station#station{readings = NewReadings},
           Name = NewStation#station.name,
           Coords = NewStation#station.coords,
-
           Monitor#{Name := NewStation, Coords := NewStation}
       end
   end.
@@ -129,6 +128,38 @@ get_daily_mean(Type, Day, Monitor) ->
       lists:foldl(fun (X, Acc) -> X#reading.value + Acc end, Head#reading.value, Tail) / length(ReadingsInDay)
   end.
 
+% dodaj do modułu funkcję get_correlation która obliczy odchylenie standardowe z różnic pomiarów dwóch typów zanieczyszczeń 
 
+count_differences(SortedReadings) ->
+  case SortedReadings of
+    [#reading{type = T1, dateTime = D, value = V1}, #reading{type = T2, dateTime = D, value = V2} | Tail] when T1 =/= T2->
+      [V2 - V1 | count_differences(Tail)];
+    [_ | Tail] ->
+      count_differences(Tail);
+    [] -> 
+      []
+  end.
+          
+get_correlation(Type1, Type2, Monitor) ->
+  Stations = lists:usort(maps:values(Monitor)),
+  ReadingsByStation = lists:map(fun(S) -> S#station.readings end, Stations),
+  ReadingsFiltered = lists:map(fun(Rs) -> lists:filter(fun(R) -> R#reading.type == Type1 orelse R#reading.type == Type2 end, Rs) end, ReadingsByStation),
+  ReadingsSortedUnique = lists:map(fun(Rs) -> lists:sort(Rs) end, ReadingsFiltered),
+  case ReadingsSortedUnique of 
+    [] ->
+      {error, "No readings with any of the two provided types"};
+    _ ->
+      Differences = lists:flatmap(fun count_differences/1 , ReadingsSortedUnique),
+      io:format("~p", [Differences]),
+      case Differences of
+        [] ->
+          {error, "Readings of afermentioned types never coencide"};
+        _ ->
+          Mean = lists:sum(Differences) / length(Differences),
+          DevSum = lists:foldl(fun (X, Acc) -> (X - Mean) * (X - Mean) + Acc end, 0, Differences),
+          DevSq = DevSum / length(Differences),
+          math:sqrt(DevSq)
+      end
+  end.
 
-
+  

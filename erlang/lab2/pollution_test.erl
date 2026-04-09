@@ -207,3 +207,48 @@ get_daily_mean_fail_test() ->
   ?assertMatch({error, _}, pollution:get_daily_mean("PM25",{2023,3,27}, M2)),
   ?assertMatch({error, _}, pollution:get_daily_mean("PM10",{2023,3,29}, M2)).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_correlation_single_station_test() ->
+    M = pollution:create_monitor(),
+    ?assertMatch({error, _}, pollution:get_correlation("PM10", "PM25", M)),
+    M1 = pollution:add_station("S1", {1,1}, M),
+    
+    % 10 - 8 = 2
+    M2 = pollution:add_value("S1", {2023, 1, 1, 12, 0, 0}, "PM10", 10, M1),
+    M3 = pollution:add_value("S1", {2023, 1, 1, 12, 0, 0}, "PM25", 8, M2),
+    
+    % 20 - 16 = 4
+    M4 = pollution:add_value("S1", {2023, 1, 1, 13, 0, 0}, "PM10", 20, M3),
+    M5 = pollution:add_value("S1", {2023, 1, 1, 13, 0, 0}, "PM25", 16, M4),
+    
+    % Mean = 3
+    % Variance = ((2-3)^2 + (4-3)^2) / 2 = (1 + 1) / 2 = 1.0
+    % Std dev = sqrt(1) = 1.0 
+    ?assertEqual(1.0, pollution:get_correlation("PM10", "PM25", M5)).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_correlation_multiple_stations_test() ->
+    M0 = pollution:create_monitor(),
+    M1 = pollution:add_station("S1", {1,1}, M0),
+    M2 = pollution:add_station("S2", {2,2}, M1),
+    
+    % 15 - 10 = 5 
+    M3 = pollution:add_value("S1", t1, "PM10", 15, M2),
+    M4 = pollution:add_value("S1", t1, "PM25", 10, M3),
+    
+    % 9 - 10 = -1 
+    M5 = pollution:add_value("S2", t1, "PM10", 9, M4),
+    M6 = pollution:add_value("S2", t1, "PM25", 10, M5),
+    
+    % 12 - 10 = 2 
+    M7 = pollution:add_value("S2", t2, "PM10", 12, M6),
+    M8 = pollution:add_value("S2", t2, "PM25", 10, M7),
+    
+    M9 = pollution:add_value("S1", t2, "PM10", 100, M8), 
+    
+    % Mean = 6 / 3 = 2.0
+    % Variance = ((5-2)^2 + (-1-2)^2 + (2-2)^2) / 3 = (9 + 9 + 0) / 3 = 6.0
+    % Std dev = sqrt(6)    
+    %
+    Expected = math:sqrt(6),
+    ?assertMatch(Expected, pollution:get_correlation("PM10", "PM25", M9)).
