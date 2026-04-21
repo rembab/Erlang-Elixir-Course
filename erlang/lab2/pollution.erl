@@ -144,12 +144,12 @@ get_correlation(Type1, Type2, Monitor) ->
   Stations = lists:usort(maps:values(Monitor)),
   ReadingsByStation = lists:map(fun(S) -> S#station.readings end, Stations),
   ReadingsFiltered = lists:map(fun(Rs) -> lists:filter(fun(R) -> R#reading.type == Type1 orelse R#reading.type == Type2 end, Rs) end, ReadingsByStation),
-  ReadingsSortedUnique = lists:map(fun(Rs) -> lists:sort(Rs) end, ReadingsFiltered),
-  case ReadingsSortedUnique of 
+  ReadingsSorted = lists:map(fun(Rs) -> lists:sort(Rs) end, ReadingsFiltered),
+  case ReadingsSorted of 
     [] ->
       {error, "No readings with any of the two provided types"};
     _ ->
-      Differences = lists:flatmap(fun count_differences/1 , ReadingsSortedUnique),
+      Differences = lists:flatmap(fun count_differences/1 , ReadingsSorted),
       io:format("~p", [Differences]),
       case Differences of
         [] ->
