@@ -3,7 +3,7 @@
 -behaviour(gen_server).
 
 -export([start_link/0, init/1, crash/0, handle_cast/2, handle_call/3]).
--export([add_station/2, add_value/4, remove_value/3, get_one_value/3, get_station_min/2, get_station_mean/2, get_daily_mean/2, get_correlation/2, get_station/1]).
+-export([add_station/2, add_value/4, remove_value/3, get_one_value/3, get_station_min/2, get_station_mean/2, get_daily_mean/2, get_correlation/2, has_station/1]).
 
 start_link() ->
   gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
@@ -26,8 +26,8 @@ remove_value(NameOrCoords, DateTime, Type) ->
 get_one_value(NameOrCoords, DateTime, Type) ->
   gen_server:call(?MODULE,{get_one_value_msg, [NameOrCoords, DateTime, Type]}).
 
-get_station(NameOrCoords) ->
-  get_server:call(?MODULE, {get_station_msg, [NameOrCoords]}).
+has_station(NameOrCoords) ->
+  gen_server:call(?MODULE, {has_station_msg, [NameOrCoords]}).
 
 get_station_min(NameOrCoords, Type) ->
   gen_server:call(?MODULE,{get_station_min_msg, [NameOrCoords, Type]}).
@@ -54,8 +54,8 @@ handle_call({Req, Args0}, _From, State) ->
     remove_value_msg ->
       {modify, apply(pollution, remove_value, Args)};
 
-    get_station_msg ->
-      {get, apply(pollution, get_station, Args)};
+    has_station_msg ->
+      {get, apply(pollution, has_station, Args)};
     
     get_one_value_msg ->
       {get, apply(pollution, get_one_value, Args)};

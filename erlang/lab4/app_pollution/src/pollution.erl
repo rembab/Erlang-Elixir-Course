@@ -1,5 +1,5 @@
 -module(pollution).
--export([create_monitor/0, add_station/3, add_value/5, remove_value/4, get_one_value/4, get_station_min/3, get_station_mean/3, get_daily_mean/3, get_correlation/3, get_station/2]).
+-export([create_monitor/0, add_station/3, add_value/5, remove_value/4, get_one_value/4, get_station_min/3, get_station_mean/3, get_daily_mean/3, get_correlation/3, has_station/2]).
 
 -record(reading, {dateTime, type, value}).
 -record(station, {name, coords, readings=[]}).
@@ -13,14 +13,6 @@ has_station(NameOrCoords, Monitor) ->
       false;
     {ok, _} ->
       true
-  end.
-
-get_station(NameOrCoords, Monitor) ->
-  case maps:find(NameOrCoords, Monitor) of
-    error -> 
-      {error, "No such station"};
-    {ok, Station} ->
-      Station
   end.
 
 get_reading(DateTime, Type, Station) ->
