@@ -69,8 +69,7 @@ remove_value(NameOrCoords, DateTime, Type, Monitor) ->
       end
   end.
 
-get_one_value(NameOrCoords, DateTime, Type, Monitor) ->
-  case has_station(NameOrCoords, Monitor) of  
+get_one_value(NameOrCoords, DateTime, Type, Monitor) ->  case has_station(NameOrCoords, Monitor) of  
     false ->
       {error, "No station with such name or coordinates"};
     true ->

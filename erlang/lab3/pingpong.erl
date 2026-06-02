@@ -38,8 +38,6 @@ play(N) ->
   ping ! N.
 
 stop() ->
-  A = spawn
-  A ! meow
   spawn(
   fun () ->
     ping ! stop,

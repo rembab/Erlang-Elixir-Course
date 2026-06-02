@@ -22,43 +22,6 @@ init() ->
     M = pollution:create_monitor(),
     loop(M).
 
-loop(M) ->
-  Result = receive
-    {add_station_msg, Sender, Name, Coords} ->
-      {modify, Sender, pollution:add_station(Name, Coords, M)};
-    {add_value_msg, Sender, NameOrCoords, DateTime, Type, Value} ->
-      {modify, Sender, pollution:add_value(NameOrCoords, DateTime, Type, Value, M)};
-    {remove_value_msg, Sender, NameOrCoords, DateTime, Type} ->
-      {modify, Sender, pollution:remove_value(NameOrCoords, DateTime, Type, M)};
-    {get_one_value_msg, Sender, NameOrCoords, DateTime, Type} ->
-      {get, Sender, pollution:get_one_value(NameOrCoords, DateTime, Type, M)};
-    {get_station_min_msg, Sender, NameOrCoords, Type} ->
-      {get, Sender, pollution:get_station_min(NameOrCoords, Type, M)};
-    {get_station_mean_msg, Sender, NameOrCoords, Type} ->
-      {get, Sender, pollution:get_station_mean(NameOrCoords, Type, M)};
-    {get_daily_mean_msg, Sender, Type, Day} ->
-      {get, Sender, pollution:get_daily_mean(Type, Day, M)};
-    {get_correlation_msg, Sender, Type1, Type2} ->
-      {get, Sender, pollution:get_correlation(Type1, Type2, M)};
-    {stop, Sender} ->
-      {stop, Sender}
-  end,
-
-  case Result of
-    {_, PID, {error, Msg}} ->
-      PID ! {error, Msg},
-      loop(M);
-    {get, PID, Res} ->
-      PID ! Res, 
-      loop(M);
-    {modify, PID, NewM} ->
-      PID ! ok,
-      loop(NewM);
-    {stop, PID} ->
-      PID ! ok
-  end.
-
-
 sender_slave(Message) ->
   spawn( fun () -> pollution_server_process ! Message end).
 
@@ -108,6 +71,51 @@ return_result() ->
   after 
     100 ->
       {error, "Timed out, make sure the server has been started"}
+  end.
+
+
+loop(M) ->
+  Result = receive
+    {add_station_msg, Sender, Name, Coords} ->
+      {modify, Sender, pollution:add_station(Name, Coords, M)};
+
+    {add_value_msg, Sender, NameOrCoords, DateTime, Type, Value} ->
+      {modify, Sender, pollution:add_value(NameOrCoords, DateTime, Type, Value, M)};
+
+    {remove_value_msg, Sender, NameOrCoords, DateTime, Type} ->
+      {modify, Sender, pollution:remove_value(NameOrCoords, DateTime, Type, M)};
+    
+    {get_one_value_msg, Sender, NameOrCoords, DateTime, Type} ->
+      {get, Sender, pollution:get_one_value(NameOrCoords, DateTime, Type, M)};
+
+    {get_station_min_msg, Sender, NameOrCoords, Type} ->
+      {get, Sender, pollution:get_station_min(NameOrCoords, Type, M)};
+
+    {get_station_mean_msg, Sender, NameOrCoords, Type} ->
+      {get, Sender, pollution:get_station_mean(NameOrCoords, Type, M)};
+    
+    {get_daily_mean_msg, Sender, Type, Day} ->
+      {get, Sender, pollution:get_daily_mean(Type, Day, M)};
+    
+    {get_correlation_msg, Sender, Type1, Type2} ->
+      {get, Sender, pollution:get_correlation(Type1, Type2, M)};
+    
+    {stop, Sender} ->
+      {stop, Sender}
+  end,
+
+  case Result of
+    {_, PID, {error, Msg}} ->
+      PID ! {error, Msg},
+      loop(M);
+    {get, PID, Res} ->
+      PID ! Res, 
+      loop(M);
+    {modify, PID, NewM} ->
+      PID ! ok,
+      loop(NewM);
+    {stop, PID} ->
+      PID ! ok
   end.
 
 
