@@ -67,7 +67,7 @@ handle_call({Req, Args0}, _From, State) ->
       {get, apply(pollution, get_station_mean, Args)};
     
     get_daily_mean_msg ->
-      {get, apply(pollution, add_station, Args)};
+      {get, apply(pollution, get_daily_mean, Args)};
     
     get_correlation_msg ->
       {get, apply(pollution, get_correlation, Args)}

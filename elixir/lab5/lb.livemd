@@ -1,0 +1,323 @@
+<!-- livebook:{"persist_outputs":true} -->
+
+# Untitled notebook
+
+```elixir
+Mix.install([
+  {:lab5, path: ".", env: :dev}
+])
+"/home/memek/stuff/erlang/erlang/lab4/app_pollution/_build/default/lib/app_pollution/ebin"
+|> Code.append_path()
+```
+
+## Lab5
+
+Loading Data
+
+```elixir
+Lab5.data()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+"2024-02-10T09:00:00.000Z;PM1;17.07;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T09:00:00.000Z;PM25;27.92;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T09:00:00.000Z;PM10;35.56;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T09:00:00.000Z;PRESSURE;996.89;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T09:00:00.000Z;HUMIDITY;93.04;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T09:00:00.000Z;TEMPERATURE;8.52;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T10:00:00.000Z;PM1;15.8;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T10:00:00.000Z;PM25;25.38;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T10:00:00.000Z;PM10;31.71;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T10:00:00.000Z;PRESSURE;996.75;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T10:00:00.000Z;HUMIDITY;87.71;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T10:00:00.000Z;TEMPERATURE;10.52;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T11:00:00.000Z;PM1;12.59;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T11:00:00.000Z;PM25;19.69;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T11:00:00.000Z;PM10;23.34;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T11:00:00.000Z;PRESSURE;996.31;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T11:00:00.000Z;HUMIDITY;83.26;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T11:00:00.000Z;TEMPERATURE;12.11;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T12:00:00.000Z;PM1;11.3;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T12:00:00.000Z;PM25;17.57;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T12:00:00.000Z;PM10;19.8;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T12:00:00.000Z;PRESSURE;996.37;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T12:00:00.000Z;HUMIDITY;80.18;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T12:00:00.000Z;TEMPERATURE;12.89;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T13:00:00.000Z;PM1;8.76;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T13:00:00.000Z;PM25;13.29;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T13:00:00.000Z;PM10;14.67;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T13:00:00.000Z;PRESSURE;996.38;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T13:00:00.000Z;HUMIDITY;77.9;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T13:00:00.000Z;TEMPERATURE;13.13;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T14:00:00.000Z;PM1;9.11;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T14:00:00.000Z;PM25;13.76;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T14:00:00.000Z;PM10;15.14;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T14:00:00.000Z;PRESSURE;996.73;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T14:00:00.000Z;HUMIDITY;79.65;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T14:00:00.000Z;TEMPERATURE;12.69;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T15:00:00.000Z;PM1;12.4;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T15:00:00.000Z;PM25;18.76;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T15:00:00.000Z;PM10;21.85;57570;Polska, Kraków, Floriana Straszewskiego;50.057224,19.933157\n2024-02-10T15:00:00.000Z;PRESSURE;996" <> ...
+```
+
+Parsing data
+
+```elixir
+Lab5.data()
+|> Parser.parse_data()
+# or Lab5.parsed_data()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+[
+  %{
+    location: {50.057224, 19.933157},
+    datetime: {{2024, 2, 10}, {9, 0}},
+    pollutionLevel: 17.07,
+    pollutionType: "PM1",
+    stationID: 57570,
+    stationName: "Polska, Kraków, Floriana Straszewskiego"
+  },
+  %{
+    location: {50.057224, 19.933157},
+    datetime: {{2024, 2, 10}, {9, 0}},
+    pollutionLevel: 27.92,
+    pollutionType: "PM25",
+    stationID: 57570,
+    stationName: "Polska, Kraków, Floriana Straszewskiego"
+  },
+  %{
+    location: {50.057224, 19.933157},
+    datetime: {{2024, 2, 10}, {9, 0}},
+    pollutionLevel: 35.56,
+    pollutionType: "PM10",
+    stationID: 57570,
+    stationName: "Polska, Kraków, Floriana Straszewskiego"
+  },
+  %{
+    location: {50.057224, 19.933157},
+    datetime: {{2024, 2, 10}, {9, 0}},
+    pollutionLevel: 996.89,
+    pollutionType: "PRESSURE",
+    stationID: 57570,
+    stationName: "Polska, Kraków, Floriana Straszewskiego"
+  },
+  %{
+    location: {50.057224, 19.933157},
+    datetime: {{2024, 2, 10}, {9, 0}},
+    pollutionLevel: 93.04,
+    pollutionType: "HUMIDITY",
+    stationID: 57570,
+    stationName: "Polska, Kraków, Floriana Straszewskiego"
+  },
+  %{
+    location: {50.057224, 19.933157},
+    datetime: {{2024, 2, 10}, {9, 0}},
+    pollutionLevel: 8.52,
+    pollutionType: "TEMPERATURE",
+    stationID: 57570,
+    stationName: "Polska, Kraków, Floriana Straszewskiego"
+  },
+  %{location: {50.057224, 19.933157}, ...},
+  ...
+]
+```
+
+Identifying stations
+
+```elixir
+Lab5.parsed_data()
+|> Pollution.identify_stations()
+#or Lab5.stations()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+[
+  %{name: "57570 Polska, Kraków, Floriana Straszewskiego", coords: {50.057224, 19.933157}},
+  %{name: "9910 Polska, Kraków, Studencka", coords: {50.062418, 19.928368}},
+  %{name: "17 Polska, Kraków, Aleja Zygmunta Krasińskiego", coords: {50.057678, 19.926189}},
+  %{name: "8076 Polska, Kraków, Masarska", coords: {50.054907, 19.956501}},
+  %{name: "55806 Polska, Kraków, Świętego Wawrzyńca", coords: {50.049168, 19.946672}},
+  %{name: "9919 Polska, Kraków, Kielecka", coords: {50.066747, 19.962083}},
+  %{name: "11239 Polska, Kraków, Generała Józefa Bema", coords: {50.07174, 19.962317}},
+  %{name: "59619 Polska, Kraków, Rynek Podgórski", coords: {50.043834, 19.949114}},
+  %{name: "39364 Polska, Kraków, Przedwiośnie", coords: {50.042557, 19.940229}},
+  %{name: "9895 Polska, Kraków, Adolfa Nowaczyńskiego", coords: {50.047736, 19.919646}},
+  %{name: "2935 Polska, Kraków, Królewska", coords: {50.072968, 19.914829}},
+  %{name: "8165 Polska, Kraków, Leopolda Staffa", coords: {50.072763, 19.911081}},
+  %{name: "9576 Polska, Kraków, Powstańców Wielkopolskich", coords: {50.043741, 19.966589}},
+  %{name: "44928 Polska, Kraków, Wielicka", coords: {50.039816, 19.965351}},
+  %{name: "9896 Polska, Kraków, Vlastimila Hofmana", coords: {50.057537, 19.897547}},
+  %{name: "9897 Polska, Kraków, Macieja Miechowity", coords: {50.084134, 19.968416}},
+  %{name: "9888 Polska, Kraków, Henryka Pachońskiego", coords: {50.093619, 19.924138}},
+  %{name: "44968 Polska, Kraków, ", coords: {50.094915, 19.952995}},
+  %{name: "44702 Polska, Kraków, Emaus", coords: {50.06666, 19.887966}},
+  %{name: "60 Polska, Kraków, Racheli", coords: {50.081197, 19.895358}},
+  ...
+]
+```
+
+Number of stations
+
+```elixir
+Lab5.stations()
+|> length()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+86
+```
+
+Starting pollution app
+
+```elixir
+Application.start(:app_pollution)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+:ok
+```
+
+Loading stations
+
+```elixir
+Lab5.stations()
+|> Pollution.load_stations()
+# or Lab5.load_stations()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+:ok
+```
+
+Timing
+
+```elixir
+data = Lab5.stations()
+microsecs = 
+  :timer.tc(Pollution, :load_stations, [data])
+  |> elem(0)
+
+microsecs / 1000000
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+1.74e-4
+```
+
+Loading records
+
+```elixir
+Lab5.parsed_data()
+|> Pollution.load_records()
+# or Lab5.load_records()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+:ok
+```
+
+Timing
+
+```elixir
+
+data = Lab5.parsed_data()
+microsecs = 
+  :timer.tc(Pollution, :load_records, [data])
+  |> elem(0)
+
+microsecs / 1000000
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+0.423821
+```
+
+Testing sample data
+
+```elixir
+f = fn -> :pollution_gen_server.get_station_min("9910 Polska, Kraków, Studencka", "PM10") end
+res = f.()
+secs = (:timer.tc(f) |> elem(0)) / 1000000
+{res, secs}
+
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+{1.14, 1.1e-5}
+```
+
+```elixir
+
+f = fn -> :pollution_gen_server.get_daily_mean("PM25", {2024, 2, 10}) end
+res = f.()
+secs = (:timer.tc(f) |> elem(0)) / 1000000
+{res, secs}
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+{20.524901639344236, 0.002994}
+```
+
+## PollutionDataLoader
+
+```elixir
+Application.start(:app_pollution)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+{:error, {:already_started, :app_pollution}}
+```
+
+Loading stations
+
+```elixir
+PollutionDataLoader.stream_file()
+|> PollutionDataLoader.parse_data(&Parser.parse_line/1, ";")
+|> PollutionDataLoader.identify_stations()
+|> PollutionDataLoader.load_stations()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+:ok
+```
+
+Timing
+
+```elixir
+f = fn -> (PollutionDataLoader.stream_file()
+|> PollutionDataLoader.parse_data(&Parser.parse_line/1, ";")
+|> PollutionDataLoader.identify_stations()
+|> PollutionDataLoader.load_stations()) end
+
+microsecs = :timer.tc(f)
+|> elem(0)
+microsecs / 1000000
+
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+0.145088
+```
+
+Loading records
+
+```elixir
+PollutionDataLoader.stream_file()
+|> PollutionDataLoader.parse_data(&Parser.parse_line/1, ";")
+|> PollutionDataLoader.load_records()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+:ok
+```
+
+Timing
+
+```elixir
+f = fn -> PollutionDataLoader.stream_file()
+|> PollutionDataLoader.parse_data(&Parser.parse_line/1, ";")
+|> PollutionDataLoader.load_records() end
+
+microsecs = :timer.tc(f)
+|> elem(0)
+microsecs / 1000000
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+0.605992
+```
